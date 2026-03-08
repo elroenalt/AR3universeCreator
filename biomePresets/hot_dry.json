@@ -1,0 +1,120 @@
+{
+  "biomes": [
+    {
+      "biome1": "minecraft:desert",
+      "biome2": "minecraft:basalt_deltas",
+      "peak1": "minecraft:stony_peaks",
+      "peak2": "minecraft:stony_peaks",
+      "temperaturesList": [
+        "FROZEN",
+        "LOW",
+        "MID",
+        "WARM",
+        "HOT"
+      ],
+      "humidityList": [
+        "VERY_WET",
+        "WET",
+        "MID",
+        "DRY",
+        "VERY_DRY"
+      ],
+      "continentalnessList": [
+        "DEEP_OCEAN",
+        "OCEAN",
+        "COAST",
+        "NEAR_INLAND",
+        "MID_INLAND",
+        "FAR_INLAND"
+      ],
+      "erosionList": [
+        "VERY_LOW",
+        "LOW",
+        "HIGH",
+        "VERY_HIGH"
+      ]
+    },
+    {
+      "biome1": "minecraft:badlands",
+      "temperaturesList": [
+        "FROZEN",
+        "LOW",
+        "MID",
+        "WARM",
+        "HOT"
+      ],
+      "humidityList": [
+        "MID",
+        "WET",
+        "VERY_WET"
+      ],
+      "continentalnessList": [
+        "DEEP_OCEAN",
+        "OCEAN",
+        "COAST",
+        "NEAR_INLAND",
+        "MID_INLAND",
+        "FAR_INLAND"
+      ],
+      "erosionList": [
+        "VERY_LOW",
+        "LOW",
+        "HIGH",
+        "VERY_HIGH"
+      ]
+    },
+    {
+      "biome1": "minecraft:eroded_badlands",
+      "temperaturesList": [
+        "FROZEN",
+        "LOW",
+        "MID",
+        "WARM",
+        "HOT"
+      ],
+      "humidityList": [
+        "VERY_WET",
+        "WET",
+        "MID",
+        "DRY",
+        "VERY_DRY"
+      ],
+      "continentalnessList": [
+        "DEEP_OCEAN",
+        "OCEAN",
+        "COAST",
+        "NEAR_INLAND",
+        "MID_INLAND",
+        "FAR_INLAND"
+      ],
+      "erosionList": [
+        "VERY_HIGH"
+      ]
+    },
+    {
+      "biome1": "minecraft:wooded_badlands",
+      "temperaturesList": [
+        "FROZEN",
+        "LOW"
+      ],
+      "humidityList": [
+        "WET",
+        "VERY_WET"
+      ],
+      "continentalnessList": [
+        "DEEP_OCEAN",
+        "OCEAN",
+        "COAST",
+        "NEAR_INLAND",
+        "MID_INLAND",
+        "FAR_INLAND"
+      ],
+      "erosionList": [
+        "VERY_LOW",
+        "LOW",
+        "HIGH",
+        "VERY_HIGH"
+      ]
+    }
+  ]
+}
