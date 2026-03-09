@@ -1,0 +1,133 @@
+{
+    "position": {
+        "definition": "?",
+        "varStruc": "Vec3"
+    },
+    "hasCustomSky": {
+        "definition": "decides wether to render a custom sky based on alter values?",
+        "varStruc": "boolean"
+    },
+    "gravitationalMultiplier": {
+        "definition": "the amount of gravity with 1 being earths gravity",
+        "varStruc": "float"
+    },
+    "earthRadiusMultiplier": {
+        "definition": "the planets radius relative to earthes radius",
+        "varStruc": "float"
+    },
+    "rotationAxis": {
+        "definition": "the axis the celestrial body curently rotates around itself",
+        "varStruc": "Vec3"
+    },
+    "seaLevel": {
+        "definition": "current sea level (vanilla setting = 63)",
+        "varStruc": "int"
+    },
+    "originalSeaLevel": {
+        "definition": "original level of the sea (vanilla setting = 63)",
+        "varStruc": "int"
+    },
+    "generateStructures": {
+        "definition": "wether the planet should generate any structure",
+        "varStruc": "boolean"
+    },
+    "parentDimensionId": {
+        "definition": "what celestrial body the celestrial body schould rotate around",
+        "varStruc": "dictonary with namespace and path"
+    },
+    "orbitAxis": {
+        "definition": "the orbit the celestrial body curently takes around its parent dimension",
+        "varStruc": "Vec3"
+    },
+    "orbitalDistanceToParent": {
+        "definition": "the distance beetween the parent celestrial body and itself in AU (astronomical unit = distance beetween sun and earth)",
+        "varStruc": "float"
+    },
+    "orbitalBaseOffsetDegrees": {
+        "definition": "?",
+        "varStruc": "float"
+    },
+    "dayTimeReference": {
+        "definition": "the celestrial body it takes refrence from to calculate day and night time",
+        "varStruc": "dictonary with namespace and path"
+    },
+    "texture": {
+        "definition": "the texture used for the space rendered body model",
+        "varStruc": "dictonary with namespace and path"
+    },
+    "skyColor": {
+        "definition": "the normal color of the sky in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "cloudColor": {
+        "definition": "the normal color of the clouds in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "fogColor": {
+        "definition": "the base color of the fog in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "sunRiseColor": {
+        "definition": "the normal color of the sunrise in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "reflectiveTextureTintColor": {
+        "definition": "which color schould be reflected how much in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "emissiveColor": {
+        "definition": "the color that the body radiates outwards in RGB/255",
+        "varStruc": "Vec3"
+    },
+    "hasRingSystem": {
+        "definition": "wether the celestrial body has rings",
+        "varStruc": "boolean"
+    },
+    "radiationIntensity": {
+        "definition": "intensity on which it radiats (emissiv color and co.)",
+        "varStruc": "float"
+    },
+    "atmosphereDensity": {
+        "definition": "the bodies atmospheric density, temporary value later to be replaced with gas calculation",
+        "varStruc": "float"
+    },
+    "latitude_len": {
+        "definition": "how much you have to move in z direction to 'go around the planet' 0% = equator, 25% = South Pole, 50% = equator again, 75% = North Pole",
+        "varStruc": "int"
+    },
+    "targetDayLength": {
+        "definition": "negative or zero for a fixed length",
+        "varStruc": "int"
+    },
+    "dayTime": {
+        "definition": "?",
+        "varStruc": "int"
+    },
+    "isKnown": {
+        "definition": "whether the player still has to discover the celestrial body in the observatory",
+        "varStruc": "boolean"
+    },
+    "canVisit": {
+        "definition": "whether the player can visit the celestrial body with a rocket",
+        "varStruc": "boolean"
+    },
+    "artifactItem": {
+        "definition": "WIP wether the palyer has to provide an artifact to discover the celestrial body",
+        "varStruc": "null"
+    },
+    "biomePreset": {
+        "definition": "wich biome mix the celestrial body schould use (defined in config AR biome preser)",
+        "varStruc": "str (json file name)"
+    },
+    "name": {
+        "definition": "name of the planet",
+        "varStruc": "str"
+    },
+    "type": {
+        "definition": "what type the of celestrial body it is eg PLANET",
+        "varStruc": "str"
+    },
+    "dimensionID": {
+        "definition": "the id used for the dimension eg minecraft, overword structure for existing dimensions to link and adv_rocketry, name for creating a new one"
+    }
+}
