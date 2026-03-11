@@ -33,7 +33,7 @@
     },
     "parentDimensionId": {
         "definition": "what celestrial body the celestrial body schould rotate around",
-        "varStruc": "dictonary with namespace and path"
+        "varStruc": "path"
     },
     "orbitAxis": {
         "definition": "the orbit the celestrial body curently takes around its parent dimension",
@@ -49,11 +49,11 @@
     },
     "dayTimeReference": {
         "definition": "the celestrial body it takes refrence from to calculate day and night time",
-        "varStruc": "dictonary with namespace and path"
+        "varStruc": "path"
     },
     "texture": {
         "definition": "the texture used for the space rendered body model",
-        "varStruc": "dictonary with namespace and path"
+        "varStruc": "path"
     },
     "skyColor": {
         "definition": "the normal color of the sky in RGB/255",
@@ -128,6 +128,7 @@
         "varStruc": "str"
     },
     "dimensionID": {
-        "definition": "the id used for the dimension eg minecraft, overword structure for existing dimensions to link and adv_rocketry, name for creating a new one"
+        "definition": "the id used for the dimension eg minecraft, overword structure for existing dimensions to link and adv_rocketry, name for creating a new one",
+        "varStruc": "path"
     }
 }
