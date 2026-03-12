@@ -1,144 +1,17 @@
 import customtkinter as ctk
-import jsonLoader
 import tkinter as tk
+from tkinterdnd2 import DND_FILES, TkinterDnD
+import json
+import os
+
 ctk.set_appearance_mode("dark") 
 ctk.set_default_color_theme("blue")
-definitions = {
-    "position": {
-        "definition": "?",
-        "varStruc": "Vec3"
-    },
-    "hasCustomSky": {
-        "definition": "decides wether to render a custom sky based on alter values?",
-        "varStruc": "boolean"
-    },
-    "gravitationalMultiplier": {
-        "definition": "the amount of gravity with 1 being earths gravity",
-        "varStruc": "float"
-    },
-    "earthRadiusMultiplier": {
-        "definition": "the planets radius relative to earthes radius",
-        "varStruc": "float"
-    },
-    "rotationAxis": {
-        "definition": "the axis the celestrial body curently rotates around itself",
-        "varStruc": "Vec3"
-    },
-    "seaLevel": {
-        "definition": "current sea level (vanilla setting = 63)",
-        "varStruc": "int"
-    },
-    "originalSeaLevel": {
-        "definition": "original level of the sea (vanilla setting = 63)",
-        "varStruc": "int"
-    },
-    "generateStructures": {
-        "definition": "wether the planet should generate any structure",
-        "varStruc": "boolean"
-    },
-    "parentDimensionId": {
-        "definition": "what celestrial body the celestrial body schould rotate around",
-        "varStruc": "path"
-    },
-    "orbitAxis": {
-        "definition": "the orbit the celestrial body curently takes around its parent dimension",
-        "varStruc": "Vec3"
-    },
-    "orbitalDistanceToParent": {
-        "definition": "the distance beetween the parent celestrial body and itself in AU (astronomical unit = distance beetween sun and earth)",
-        "varStruc": "float"
-    },
-    "orbitalBaseOffsetDegrees": {
-        "definition": "?",
-        "varStruc": "float"
-    },
-    "dayTimeReference": {
-        "definition": "the celestrial body it takes refrence from to calculate day and night time",
-        "varStruc": "path"
-    },
-    "texture": {
-        "definition": "the texture used for the space rendered body model",
-        "varStruc": "path"
-    },
-    "skyColor": {
-        "definition": "the normal color of the sky in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "cloudColor": {
-        "definition": "the normal color of the clouds in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "fogColor": {
-        "definition": "the base color of the fog in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "sunRiseColor": {
-        "definition": "the normal color of the sunrise in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "reflectiveTextureTintColor": {
-        "definition": "which color schould be reflected how much in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "emissiveColor": {
-        "definition": "the color that the body radiates outwards in RGB/255",
-        "varStruc": "Vec3"
-    },
-    "hasRingSystem": {
-        "definition": "wether the celestrial body has rings",
-        "varStruc": "boolean"
-    },
-    "radiationIntensity": {
-        "definition": "intensity on which it radiats (emissiv color and co.)",
-        "varStruc": "float"
-    },
-    "atmosphereDensity": {
-        "definition": "the bodies atmospheric density, temporary value later to be replaced with gas calculation",
-        "varStruc": "float"
-    },
-    "latitude_len": {
-        "definition": "how much you have to move in z direction to 'go around the planet' 0% = equator, 25% = South Pole, 50% = equator again, 75% = North Pole",
-        "varStruc": "int"
-    },
-    "targetDayLength": {
-        "definition": "negative or zero for a fixed length",
-        "varStruc": "int"
-    },
-    "dayTime": {
-        "definition": "?",
-        "varStruc": "int"
-    },
-    "isKnown": {
-        "definition": "whether the player still has to discover the celestrial body in the observatory",
-        "varStruc": "boolean"
-    },
-    "canVisit": {
-        "definition": "whether the player can visit the celestrial body with a rocket",
-        "varStruc": "boolean"
-    },
-    "artifactItem": {
-        "definition": "WIP wether the palyer has to provide an artifact to discover the celestrial body",
-        "varStruc": "null"
-    },
-    "biomePreset": {
-        "definition": "wich biome mix the celestrial body schould use (defined in config AR biome preser)",
-        "varStruc": "str (json file name)"
-    },
-    "name": {
-        "definition": "name of the planet",
-        "varStruc": "str"
-    },
-    "type": {
-        "definition": "what type the of celestrial body it is eg PLANET",
-        "varStruc": "str"
-    },
-    "dimensionID": {
-        "definition": "the id used for the dimension eg minecraft, overword structure for existing dimensions to link and adv_rocketry, name for creating a new one",
-        "varStruc": "path"
-    }
-}
-dimensionProperties = jsonLoader.getdimensionProperties()
-dimensions_names = [dimension[1] for dimension in dimensionProperties]
+
+default_json = None
+definitions = None
+dimensionProperties = []
+dimensions_names = []
+
 class dimension_Frame(ctk.CTkFrame):
     def __init__(self, master,properties,refrence, **kwargs):
         super().__init__(master, **kwargs)
@@ -149,28 +22,56 @@ class dimension_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=4)
         self.buttons = []
         self.rows = 0
-        for propertie in list(self.properties.items()):
-            button = ctk.CTkButton(master=self, text=propertie[0],corner_radius=0,fg_color="#5F5F5F",hover_color="#505050", 
+        for propertie in list(self.properties[0].items()):
+            open = ctk.CTkButton(master=self, text=propertie[0],corner_radius=0,fg_color="#5F5F5F",hover_color="#505050", 
                                    command=lambda ref=list(self.refrence): self.click(ref))
-            self.buttons.append((button,refrence))
-            button.grid(sticky="ew",row=self.rows, column=1, padx=20, pady=0)
+            self.buttons.append((open,refrence))
+            open.grid(sticky="ew",row=self.rows, column=1, padx=(20,0), pady=0)
             self.rows += 1
             self.refrence[1] += 1
-        
+    def reload(self):
+        print("reload")
+    def edit(self):
+        print("edit")
+    def delete(self):
+        print("delete")
+        app.leftFrame.dimesnion_Buttons[self.refrence[0]].destroy()
+        app.leftFrame.dimesnion_Buttons[self.refrence[0]] = None
+        dimensionProperties[self.refrence[0]] = None
+        dimensions_names[self.refrence[0]] = None
+        app.leftFrame.dimension_Frames[self.refrence[0]] = None
+        self.destroy()
     def click(self,ref):
         app.rightFrame.display_refrence(ref)
-        if self.properties["name"] != app.focus:
+        if self.properties[0]["name"] != app.focus:
             viewer = app.rightFrame.body_viewer
-            position = self.properties["position"]
-            viewer.camera = [position["x"],position["y"]]
+            scale = ((1/6)* viewer.old_size) / (self.properties[0]["earthRadiusMultiplier"] * viewer.AU_to_earthRadius )
+            viewer.scale = scale
+            x, y = 0, 0
+            if not self.properties[0]["parentDimensionId"]:
+                pos = self.properties[0]["position"]
+                x = pos["x"]
+                y = pos["y"]
+            else:
+                # get body pos
+                body = self.properties[1]
+                parent = dimensionProperties[dimensions_names.index(body)][0]
+                while parent["parentDimensionId"]:
+                    x -= parent["orbitalDistanceToParent"]
+                    parent = dimensionProperties[dimensions_names.index(f'{parent["parentDimensionId"]["namespace"]}_{parent["parentDimensionId"]["path"]}')][0]
+                else:
+                    x += parent["position"]["x"]
+                    y += parent["position"]["y"]
+            viewer.camera = [x,y]
             viewer.draw()
-            app.focus = self.properties["name"]
+            app.focus = self.properties[0]["name"]
         
     def toggle(self):
         if self.winfo_viewable():
             self.grid_remove() 
         else:
             self.grid()
+
 class leftFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -182,24 +83,66 @@ class leftFrame(ctk.CTkScrollableFrame):
         self.rows = 1 
         self.dimension_Frames = []
         self.dimesnion_Buttons = []
-        refrence = [0]
+        self.refrence = [0]
 
         for dimension in dimensionProperties:
-            dimension = dimension[0]
-            frame = dimension_Frame(master=self, properties=dimension,refrence=refrence.copy())
-            
-            button = ctk.CTkButton(font=("Arial", 16, "bold"),master=self, text=dimension["name"], command=frame.toggle,corner_radius=0,fg_color="#07052b",hover_color="#0b0840")
-            
-            button.grid(sticky="ew",row=self.rows, column=0, padx=0, pady=0)
+            self.load_dimension(dimension)
+        
+    def load_dimension(self,dimension):
+        dimension = dimension
+        frame = dimension_Frame(master=self, properties=dimension,refrence=self.refrence.copy())
+        heading_frame = ctk.CTkFrame(self,width=100)
 
-            self.rows += 1
-            frame.grid(sticky="nsew",row=self.rows, column=0, padx=0, pady=0)
-            frame.grid_remove() 
-            self.rows += 1
+        heading_frame.grid_columnconfigure(0, weight=7, uniform="buttons")
+        heading_frame.grid_columnconfigure((1, 2, 3), weight=1, uniform="buttons")
 
-            self.dimension_Frames.append(frame)
-            self.dimesnion_Buttons.append(button)
-            refrence[0] += 1
+        open_btn = ctk.CTkButton(
+            master=heading_frame, 
+            text=dimension[0]["name"], 
+            command=frame.toggle,
+            font=("Arial", 16, "bold"),
+            corner_radius=0,
+            fg_color="#07052b",
+            hover_color="#0b0840",
+            anchor="w",
+            width=0 
+        )
+        btn_params = {
+            "master": heading_frame,
+            "font": ("Arial", 16, "bold"),
+            "corner_radius": 0,
+            "fg_color": "#07052b",
+            "hover_color": "#0b0840",
+            "width": 40
+        }
+        edit = ctk.CTkButton(**btn_params, text="🖉", command=frame.edit)
+        delete = ctk.CTkButton(**btn_params, text="🗑", command=frame.delete)
+        reload = ctk.CTkButton(**btn_params, text="🗘", command=frame.reload)
+
+        open_btn.grid(row=0, column=0, sticky="nsew")
+        edit.grid(row=0, column=1, sticky="nsew")
+        delete.grid(row=0, column=2, sticky="nsew")
+        reload.grid(row=0, column=3, sticky="nsew")
+        
+        heading_frame.grid(sticky="ew", row=self.rows, column=0)
+
+        self.rows += 1
+        frame.grid(sticky="nsew",row=self.rows, column=0, padx=0, pady=0)
+        frame.grid_remove() 
+        self.rows += 1
+
+        self.dimension_Frames.append(frame)
+        self.dimesnion_Buttons.append(heading_frame)
+        self.refrence[0] += 1
+
+    def add_dimension(self,name,file_name):
+        properties = default_json.copy()
+        properties["name"] = name
+        properties["dimensionId"]["path"] = file_name
+        dimensionProperties.append((properties,name))
+        dimensions_names.append(name)
+        
+        self.load_dimension((properties,name))
 
 class rightFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
@@ -230,64 +173,80 @@ class rightFrame(ctk.CTkScrollableFrame):
 
         #single input type
         frame_input = ctk.CTkFrame(self, fg_color="transparent")
-        frame_input.grid(row=3, column=1, padx=20, pady=10, sticky="ew")
+        frame_input.grid(row=3, column=1, padx=20, pady=5, sticky="ew")
         user_input_var = ctk.StringVar()
         user_input = ctk.CTkEntry(frame_input, textvariable=user_input_var)
         user_input_var.trace_add("write",lambda *args: self.edit(user_input_var))
-        user_input.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
+        user_input.grid(row=0, column=0, padx=20, pady=5, sticky="ew")
         frame_input.grid_remove()
         self.settings.append((frame_input,user_input))
         
         #switch input type
         frame_switch = ctk.CTkFrame(self, fg_color="transparent")
-        frame_switch.grid(row=3, column=1, padx=20, pady=10, sticky="ew")
+        frame_switch.grid(row=3, column=1, padx=20, pady=5, sticky="ew")
         switch_var = ctk.StringVar(value="on")
         switch = ctk.CTkSwitch(frame_switch, text="True/False", command=lambda: self.edit(switch_var),variable=switch_var, onvalue=True, offvalue=False)
-        switch.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
+        switch.grid(row=0, column=0, padx=20, pady=5, sticky="ew")
         frame_switch.grid_remove()
         self.settings.append((frame_switch,switch))
 
         #vec3 input type
         vec3s = []
         frame_input3 = ctk.CTkFrame(self, fg_color="transparent")
-        frame_input3.grid(row=3, column=1, padx=20, pady=10, sticky="ew")
+        frame_input3.grid(row=3, column=1, padx=20, pady=5, sticky="ew")
         for i in range(3):
             axis_label = ("x", "y", "z")[i]
             axis = ctk.CTkLabel(frame_input3, text=axis_label, font=("Arial", 16, "bold"))
-            axis.grid(row=i, column=0, padx=10, pady=(10, 5), sticky="w")
+            axis.grid(row=i, column=0, padx=10, pady=2, sticky="w")
             input_var = ctk.StringVar()
             input_field = ctk.CTkEntry(frame_input3, textvariable=input_var)
             input_var.trace_add("write", lambda *args, i=i, var=input_var: self.edit(value=var, i=i))
-            input_field.grid(row=i, column=1, padx=20, pady=10, sticky="ew")
+            input_field.grid(row=i, column=1, padx=20, pady=2, sticky="ew")
             vec3s.append(input_field)
         frame_input3.grid_remove()
         self.settings.append((frame_input3, vec3s))
-        
+
+        #path input type
+        frame_path_input = ctk.CTkFrame(self, fg_color="transparent")
+        frame_path_input.grid(row=3, column=1, padx=2, pady=5, sticky="ew")
+        user_path_input_var1 = ctk.StringVar()
+        user_path_input1 = ctk.CTkEntry(frame_path_input, textvariable=user_path_input_var1)
+        user_path_input_var1.trace_add("write",lambda *args: self.edit(user_path_input_var1,0))
+        user_path_input1.grid(row=0, column=0, padx=(0,1), pady=5, sticky="ew")
+        user_path_input_var2 = ctk.StringVar()
+        user_path_input2 = ctk.CTkEntry(frame_path_input, textvariable=user_path_input_var2)
+        user_path_input_var2.trace_add("write",lambda *args: self.edit(user_path_input_var2,1))
+        user_path_input2.grid(row=0, column=1, padx=(1,0), pady=5, sticky="ew")
+        frame_path_input.grid_remove()
+        self.settings.append((frame_path_input,user_path_input1,user_path_input2))
+
         #body viewer
         self.body_viewer = body_Display(self,height=50)
-        self.body_viewer.grid(row=4,column=1,sticky="s",pady=20,padx=20)
+        self.body_viewer.grid(row=4,column=1,sticky="s",pady=(5,10),padx=5)
         self.body_viewer.draw()
         
     def edit(self,value,i=0):
-        print("change: " + self.dataType,value)
+        if value.get() == "":
+            return
+        value = value.get() 
         match self.dataType:
             case "str" | "int" | "float":
-                value = value.get()
-                key = list(dimensionProperties[0][0][self.refrence[0]].items())[self.refrence[1]][0]
+                key = list(dimensionProperties[self.refrence[0]][0].items())[self.refrence[1]][0]
                 if not value: return
                 dimensionProperties[self.refrence[0]][0][key] = str(value) if self.dataType == "str" else int(float(value)) if self.dataType == "int" else float(value) 
             case "boolean":
-                value = True if value.get() == "1" else False
+                value = True if value == "1" else False
                 key = list(dimensionProperties[self.refrence[0]][0].items())[self.refrence[1]][0]
                 dimensionProperties[self.refrence[0]][0][key] = value
             case "Vec3":
-                print("---")
-                value = value.get()
                 key = list(dimensionProperties[self.refrence[0]][0].items())[self.refrence[1]][0]
-                print(key,i)
                 dimensionProperties[self.refrence[0]][0][key][("x","y","z")[i]] = float(value)
+            case "path":
+                key = list(dimensionProperties[self.refrence[0]][0].items())[self.refrence[1]][0]
+                dimensionProperties[self.refrence[0]][0][key][("namespace","path")[i]] = str(value)
             case __:
                 print("not yet added")
+
     def _on_resize(self, event):
         available_width = self.container.winfo_width() - 100
         if available_width > 0:
@@ -307,12 +266,12 @@ class rightFrame(ctk.CTkScrollableFrame):
                 item = self.settings[0]
                 item[1].delete("0", "end")
                 item[1].insert("0", property[1])
-                item[1].bind()
                 item[0].grid()
             case "boolean":
                 self.cur_setting = 1
                 item = self.settings[1]
-                item[1].configure(state="enabled" if property[1] else "disabled")
+                if property[1]: item[1].select()
+                else: item[1].deselect()
                 item[0].grid()
             case "Vec3":
                 self.cur_setting = 2
@@ -321,8 +280,16 @@ class rightFrame(ctk.CTkScrollableFrame):
                     item[1][i].delete("0", "end")
                     item[1][i].insert("0", str(list(property[1].values())[i]))
                 item[0].grid()
+            case "path":
+                self.cur_setting = 3
+                item = self.settings[3]
+                for i in range(1,3):
+                    item[i].delete("0", "end")
+                    item[i].insert("0", str(list(property[1].values())[i-1]))
+                item[0].grid()
             case __:
-                pass
+                print("not yet added")
+
 class body_Display(tk.Canvas):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, bg="#000000", highlightthickness=0, **kwargs)
@@ -330,17 +297,20 @@ class body_Display(tk.Canvas):
         self.bind("<Configure>", self.resize)
         self.speed = 3
         self.camera = [0, 0]
-        self.scale = 0.5
+        self.scale = 2
         self.AU_to_earthRadius = 1/2343
+        self.orbit_grad = ("#b6c60e","#4d2911","#5A5A5A")
         self.bind("<Button-1>", self.zoom)
         self.bind("<Button-3>", self.zoom)
         self.draw()
+
     def zoom(self, event):
         if event.num == 1:
             self.scale *= 2
         elif event.num == 3:
             self.scale *= 0.5
         self.draw()
+
     def move_cam(self,event = None):
         key = event.keysym.lower()
         if key == 'button-5':
@@ -354,46 +324,61 @@ class body_Display(tk.Canvas):
         elif key == 'right':
             self.camera[0] += self.speed/self.scale
         self.draw()
+
     def draw(self):
+        color = self.orbit_grad[0]
         self.delete("all")
         cx = self.winfo_width() / 2
         cy = self.winfo_height() / 2
         for dimension in dimensionProperties:
+            if not dimension: continue
+            parent_count = 0
             x = 0
             y = 0
             dimension_props = dimension[0]
             raw_radius = dimension_props["earthRadiusMultiplier"] * self.scale * self.AU_to_earthRadius
-            radius = max(0.1, raw_radius) 
+            radius = max(1, raw_radius+1) 
             if not dimension_props["parentDimensionId"]:
                 pos = dimension_props["position"]
                 x = pos["x"]
                 y = pos["y"]
             else:
+                # get body pos
                 body = dimension[1]
                 parent = dimensionProperties[dimensions_names.index(body)][0]
                 while parent["parentDimensionId"]:
+                    parent_count += 1
                     x -= parent["orbitalDistanceToParent"]
                     parent = dimensionProperties[dimensions_names.index(f'{parent["parentDimensionId"]["namespace"]}_{parent["parentDimensionId"]["path"]}')][0]
                 else:
                     x += parent["position"]["x"]
                     y += parent["position"]["y"]
+                #draw orbit
+                orbit_radius = dimensionProperties[dimensions_names.index(body)][0]["orbitalDistanceToParent"]
+                parentX = (x - self.camera[0]+ orbit_radius) * self.scale + cx
+                parentY = (y - self.camera[1]) * self.scale + cy
+                self.create_oval(parentX-orbit_radius*self.scale, parentY-orbit_radius*self.scale,
+                                 parentX+orbit_radius*self.scale, parentY+orbit_radius*self.scale, 
+                                 fill="", outline="#ffffff",width=1,dash=(1, 4))
+            color = self.orbit_grad[parent_count]
             x = (x - self.camera[0]) * self.scale + cx
             y = (y - self.camera[1]) * self.scale + cy
-            self.create_oval(x-radius, y-radius, x+radius, y+radius, fill="#ffffff", outline="")
-                    
-                    
+            self.create_oval(x-radius, y-radius, x+radius, y+radius, fill=color, outline="")
+            
     def resize(self, event):
         if event.width != self.old_size:
             self.old_size = event.width
             self.configure(height=event.width)
             self.draw()
 
+class App(ctk.CTk,TkinterDnD.DnDWrapper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.TkdndVersion = TkinterDnD._require(self)
 
-class App(ctk.CTk):
-    def __init__(self):
-        super().__init__()
         self.geometry("600x400")
         self.body_focus = None
+        
         self.grid_columnconfigure(0, weight=3)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -401,10 +386,37 @@ class App(ctk.CTk):
         self.title("AR3 dimensionCreator")
         self.leftFrame = leftFrame(master=self)
         self.leftFrame.grid(row=0, column=0, sticky="nsew",padx=10,pady=20)
+        self.leftFrame.drop_target_register(DND_FILES)
+        self.leftFrame.dnd_bind('<<Drop>>',self.handle_drop)
         
         self.rightFrame = rightFrame(master=self)
         self.rightFrame.grid(row=0, column=1, sticky="nsew",padx=10,pady=20)
         self.bind("<KeyPress>", self.rightFrame.body_viewer.move_cam)
+    def handle_drop(self,event):
+        file_path = event.data
+        file_path = file_path.strip('{}')
+        loadDrop(file_path)
+def loadDrop(file_path):
+    global dimensions_names
+    if ".json" in file_path:
+        dimension = (loadFile(os.path.join(file_path)),file_path.removesuffix(".json"))
+        dimensionProperties.append(dimension)
+        app.leftFrame.load_dimension(dimension)
+    else:
+        dP_names = os.listdir(file_path)
+        for path in dP_names:
+            dimension = (loadFile(os.path.join(file_path,path)),path.removesuffix(".json"))
+            dimensionProperties.append(dimension)
+            app.leftFrame.load_dimension(dimension)
+    dimensions_names = [dim[1] for dim in dimensionProperties]
+    app.rightFrame.body_viewer.draw()
+def loadFile(path):
+    file = open(path)
+    json_con = json.load(file)
+    file.close()
+    return json_con
 
 app = App()
+default_json = loadFile('default.json')
+definitions = loadFile('def.json')
 app.mainloop()

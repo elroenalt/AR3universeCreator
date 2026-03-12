@@ -1,6 +1,6 @@
 {
     "position": {
-        "definition": "?",
+        "definition": "position of stationary celestrial bodys",
         "varStruc": "Vec3"
     },
     "hasCustomSky": {
@@ -117,7 +117,7 @@
     },
     "biomePreset": {
         "definition": "wich biome mix the celestrial body schould use (defined in config AR biome preser)",
-        "varStruc": "str (json file name)"
+        "varStruc": "str"
     },
     "name": {
         "definition": "name of the planet",
