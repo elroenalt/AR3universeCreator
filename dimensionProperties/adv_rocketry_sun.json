@@ -68,6 +68,7 @@
   "canVisit": false,
   "artifactItem": null,
   "biomePreset": null,
+  "dataRequiredForUnlock": 2000,
   "name": "Sun",
   "type": "PLANET",
   "dimensionId": {

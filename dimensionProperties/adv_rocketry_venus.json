@@ -74,6 +74,7 @@
   "canVisit": true,
   "artifactItem": null,
   "biomePreset": "hot.json",
+  "dataRequiredForUnlock": 2000,
   "name": "Venus",
   "type": "PLANET",
   "dimensionId": {

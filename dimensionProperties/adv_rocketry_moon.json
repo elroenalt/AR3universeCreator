@@ -74,6 +74,7 @@
   "canVisit": true,
   "artifactItem": null,
   "biomePreset": "moon.json",
+  "dataRequiredForUnlock": 2000,
   "name": "moon",
   "type": "PLANET",
   "dimensionId": {
