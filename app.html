@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR3 DimensionCreator</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div id="mainContent">
+        <div id="left_Side">
+            <div id="top_Bar">
+                <div>Universe</div>
+            </div>
+            <div id="buttons">
+                <div id="download">🖫</div>
+                <div id="cerate">+</div>
+            </div>
+            <div id="hirachy">
+            </div>
+        </div>
+        <div id="right_Side">
+            <div id="viewer">
+                <canvas id="canvas" tabindex="1"></canvas>
+            </div>
+            <div id="editor">
+                <div id="info-container">
+                    <div id="editor-name">-------</div>
+                    <div id="editor-description">-----</div>
+                    <div id="editor-type"></div>
+                </div>
+                <div id="switch-row">
+                    <label class="switch">
+                        <input type="checkbox" id="switch-input">
+                    </label>
+                </div>
+                <div id="text-row">
+                    <input type="text" class="property_input" id="text-input">
+                </div>
+                <div id="vec3-row">
+                    <label>x</label>
+                    <input type="text" class="property_input" id="vec1-input">
+                    <br>
+                    <label>y</label>
+                    <input type="text" class="property_input" id="vec2-input">
+                    <br>
+                    <label>z</label>
+                    <input type="text" class="property_input" id="vec3-input">
+                </div>
+                <div id="selection-row">
+                    <input list="datalist" name="browser" id="selection-input">
+                    <datalist id="datalist">
+                        <option value="1">
+                        <option value="2">
+                        <option value="3">
+                        <option value="4">
+                        <option value="5">
+                    </datalist>
+                </div>
+                <div id="path-row">
+                    <label>namespace</label>
+                    <input type="text" class="property_input" id="namespace-input">
+                    <br>
+                    <label>path</label>
+                    <input type="text" class="property_input" id="path-input">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
