@@ -197,7 +197,7 @@ async function downloadAllDimensions() {
     
     const link = document.createElement('a');
     link.href = URL.createObjectURL(content);
-    link.download = "dimensions_export.zip"; 
+    link.download = "dimensionProperties.zip"; 
     
     document.body.appendChild(link);
     link.click();
@@ -429,7 +429,7 @@ class Editor {
             if (this.activeDim && this.activeProp) {
                 let val = e.target.value;
                 const type = definitions_json[this.activeProp]["varStruc"];
-                dimensions[this.activeDim].properties[this.activeProp] = type == "int" || type == "floar" ? Number(val) : String(val);
+                dimensions[this.activeDim].properties[this.activeProp] = type == "int" ? Number(val) : type == "float" ? parseFloat(val) : String(val);
                 if (this.activeProp == "name" ){
                     dimensions[this.activeDim].html["name"].textContent = String(val)
                 }
@@ -469,7 +469,6 @@ class Editor {
         this.inputs[3]["input"].addEventListener('input', (e) => {
             if (!this.activeDim || !this.activeProp) return;
             const newValue = e.target.value;
-            const currentData = dimensions[this.activeDim].properties[this.activeProp];
             if (newValue && Object.keys(dimensions).includes(newValue)) {
                 dimensions[this.activeDim].properties[this.activeProp] = dimensions[newValue].properties["dimensionId"];
             } else {
