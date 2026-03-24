@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR3 DimensionCreator</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="images/galaxy_database.png">
     <link rel="stylesheet" href="app.css">
 </head>
 <body>
     <div id="mainContent">
         <div id="left_Side">
             <div id="top_Bar">
-                <div>Universe</div>
-            </div>
-            <div id="buttons">
-                <div id="download">🖫</div>
-                <div id="cerate">+</div>
+                <div id="title">Universe</div>
+                <div id="buttons">
+                    <div id="download" class="button">🖫</div>
+                    <div id="cerate" class="button">+</div>
+                </div>
             </div>
             <div id="hirachy">
             </div>
@@ -25,8 +26,8 @@
             </div>
             <div id="editor">
                 <div id="info-container">
-                    <div id="editor-name">-------</div>
-                    <div id="editor-description">-----</div>
+                    <div id="editor-name"></div>
+                    <div id="editor-description">This is where you will see an property description</div>
                     <div id="editor-type"></div>
                 </div>
                 <div id="switch-row">
@@ -68,6 +69,15 @@
         </div>
     </div>
     <div id="tooltip">Planet Info</div>
+    <div id="quickCreator">
+        <div id="quickCreator-title">quickCreator</div>
+        <div id="quickCreator-info">info</div>
+        <div id="quickCreator-input-1" class="quickCreator-input">input1 (path)</div>
+        <div id="quickCreator-input-2" class="quickCreator-input">input2 (name)</div>
+        <div id="quickCreator-input-3" class="quickCreator-input">input3 (parentId)</div>
+        <div id="quickCreator-input-4" class="quickCreator-input">input4 (orbitalDistance)</div>
+        <div id="quickCreator-input-5" class="quickCreator-input">input5 (radius)</div>
+    </div>
     <script type="module" src="app.js"></script>
 </body>
 </html>

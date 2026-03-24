@@ -36,7 +36,17 @@ async function loadGameData() {
             display.draw_universe();
         });
         resizeCanvas()
-        
+        document.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+            switch (key) {
+                case 'escape':
+                    for (let dim of Object.values(dimensions)) {
+                        dim.html["properties_frame"].style.display = "none"
+                        editor.focus(false,false)
+                    }
+                    break;
+            }
+        });
     } catch (error) {
         console.error("Error loading JSON:", error);
     }
@@ -69,7 +79,7 @@ class Dimension {
             y = props["position"]?.["y"] || 0;
         } else {
             let parent = props;
-            while (parent["parentDimensionId"]) {
+            while (parent["parentDimensionId"] && parent["parentDimensionId"] != parent["dimensionId"]) {
                 x -= (parent["orbitalDistanceToParent"] || 0);
                 let pId = parent["parentDimensionId"];
                 let parentKey = `${pId.namespace}_${pId.path}`;
@@ -163,7 +173,7 @@ class Dimension {
             })
             element.addEventListener("click", () => {
                 editor.focus(this.file_path,item[0])
-                display.camera = [0,0]
+                this.centerPlanet()
             })
             properties_frame.appendChild(element)
             this.html["properties"].push(element)
@@ -241,7 +251,6 @@ class Display {
                     const Ty = e.clientY + 15;
                     this.tooltip.style.transform = `translate(${Tx}px, ${Ty}px)`;
                     this.tooltip.textContent = planet.file_path
-                    console.log(planet.file_path)
                     this.mouse_focus = planet
                 }
             }
@@ -251,13 +260,11 @@ class Display {
         });
         this.canvas.addEventListener('click', () => {
             if (this.mouse_focus) {
-                console.log("x")
-                editor.focus(this.mouse_focus.file_path,"position")
-                editor.focus(this.mouse_focus.file_path,"position")
-                if (dimensions[this.mouse_focus.file_path].html.properties_frame.style.display != "block") {
-                    dimensions[this.mouse_focus.file_path].html.properties_frame.style.display = "block"
+                if (dimensions[this.mouse_focus.file_path].html["properties_frame"].style.display == "none") {
+                    dimensions[this.mouse_focus.file_path].html["properties_frame"].style.display = "block"
                 }
                 dimensions[this.mouse_focus.file_path].centerPlanet()
+                editor.focus(false,false)
             }
         });
         this.canvas.addEventListener('mouseout', () => {
@@ -328,7 +335,7 @@ class Display {
             y = props["position"]?.["y"] || 0;
         } else {
             let parent = props;
-            while (parent["parentDimensionId"] && parent_count < 10) {
+            while (parent["parentDimensionId"] && parent_count < 10 && parent["parentDimensionId"] != parent["dimensionId"]) {
                 parent_count += 1;
                 x -= (parent["orbitalDistanceToParent"] || 0);
                 let pId = parent["parentDimensionId"];
@@ -350,7 +357,7 @@ class Display {
             
             this.ctx.beginPath();
             //this.ctx.setLineDash([5, 5]);
-            this.ctx.arc(orbX, orbY, orbit_radius, 0, 2 * Math.PI);
+            this.ctx.arc(orbX || 1, orbY || 1, orbit_radius || 1, 0, 2 * Math.PI);
             this.ctx.strokeStyle = "#ffffff";
             this.ctx.stroke();
         }
@@ -360,7 +367,7 @@ class Display {
 
         this.ctx.beginPath();
         this.ctx.setLineDash([]);
-        this.ctx.arc(screenX, screenY, radius, 0, 2 * Math.PI);
+        this.ctx.arc(screenX || 1, screenY || 1 , radius || 1, 0, 2 * Math.PI);
         this.ctx.fillStyle = color;
         this.ctx.fill();
 
@@ -429,7 +436,7 @@ class Editor {
             if (this.activeDim && this.activeProp) {
                 let val = e.target.value;
                 const type = definitions_json[this.activeProp]["varStruc"];
-                dimensions[this.activeDim].properties[this.activeProp] = type == "int" ? Number(val) : type == "float" ? parseFloat(val) : String(val);
+                dimensions[this.activeDim].properties[this.activeProp] = type == "int" ? Number(val) || 0 : type == "float" ? parseFloat(val) || 0.0 : String(val) || "";
                 if (this.activeProp == "name" ){
                     dimensions[this.activeDim].html["name"].textContent = String(val)
                 }
@@ -454,7 +461,7 @@ class Editor {
                     dimensions[this.activeDim].properties[this.activeProp][path] = String(e.target.value)
                     if (this.activeProp == "dimensionId" ){
                         const dimension = dimensions[this.activeDim]
-                        const file_path = [dimension.properties[this.activeProp]["namespace"],dimension.properties[this.activeProp][path]].join("_")
+                        const file_path = [dimension.properties[this.activeProp]["namespace"],dimension.properties[this.activeProp]["path"]].join("_")
                         delete dimensions[this.activeDim];
                         dimension.file_path = file_path
                         dimension.html.file_path.textContent = file_path
@@ -469,6 +476,7 @@ class Editor {
         this.inputs[3]["input"].addEventListener('input', (e) => {
             if (!this.activeDim || !this.activeProp) return;
             const newValue = e.target.value;
+            const currentData = dimensions[this.activeDim].properties[this.activeProp];
             if (newValue && Object.keys(dimensions).includes(newValue)) {
                 dimensions[this.activeDim].properties[this.activeProp] = dimensions[newValue].properties["dimensionId"];
             } else {
@@ -481,12 +489,19 @@ class Editor {
         for(let input of this.inputs) {
             input["frame"].style.display = "none"
         }
-        if (!Object.keys(definitions_json).includes(prop)) {
+        const info = prop ? definitions_json[prop] : null
+        if (!info) {
+            display.draw_universe()
             return
         }
-        const info = definitions_json[prop]
+        if (!prop || !dim || !Object.keys(definitions_json).includes(prop)) {
+            this.info_html["name"].textContent = ""
+            this.info_html["description"].textContent = "This is where you will see an property description"
+            this.info_html["type"].textContent = ""
+            return
+        }
         this.info_html["name"].textContent = prop
-        this.info_html["description"].textContent = info["definition"]
+        this.info_html["description"].textContent = info["definition"] 
         this.info_html["type"].textContent = info["varStruc"]
         this.activeDim = dim
         this.activeProp = prop
@@ -504,7 +519,6 @@ class Editor {
             case "int":
             case "str": {
                 this.inputs[1]["frame"].style.display = "block";
-                console.log(this.inputs[1]["input"])
                 this.inputs[1]["input"].value = (val === null) ? "" : String(val);
                 break;}
             case "boolean":{
@@ -540,6 +554,11 @@ class Editor {
             default:
                 console.log("not added " + info["varStruc"])
         }
+    }
+}
+class quickCreator {
+    constructor() {
+
     }
 }
 window.addEventListener('dragenter', (e) => {

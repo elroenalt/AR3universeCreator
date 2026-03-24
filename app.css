@@ -41,12 +41,19 @@ body {
     padding-top: 10px;
     gap: 10px;
     overflow-y: auto; 
+    box-shadow: 2px 2px rgb(255, 255, 255,0.2);
 }
 #top_Bar {
     text-align: center;
     font-weight: bold;
     color: #fff;
-    font-size: larger;
+    font-size: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid white;
+    box-shadow: 2px 2px rgb(255, 255, 255,0.2);
+}
+#title {
+    font-size: 2rem;
 }
 #right_Side {
     background-color: var(--bg-color); 
@@ -57,11 +64,16 @@ body {
     border-radius: 1%;
     display: grid;
     grid-template-rows: 40% 60%; 
+    box-shadow: 2px 2px rgb(255, 255, 255,0.2);
+}
+.button {
+    cursor: pointer;
 }
 #canvas {
     background-color: black;
     width: 100%;
     height: 100%;
+    box-shadow: 2px 2px rgb(255, 255, 255,0.2);
 }
 #hirachy {
     display: flex;
@@ -178,4 +190,33 @@ body {
     display: none;
     font-family: monospace;
     white-space: nowrap;
+}
+#quickCreator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 2px 2px rgb(255, 255, 255,0.2);
+    background-color: rgb(70, 70, 70);
+    width: 40%;
+    height: 50%;
+    color: white;
+    border-radius: 2rem;
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    display: none;
+}
+#quickCreator > * {
+    padding-top: 1rem;
+}
+#quickCreator-title {
+    font-size: 2.5rem;
+    text-decoration: underline solid;
+}
+#quickCreator-info {
+    width: 100%;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid white;
+
 }
