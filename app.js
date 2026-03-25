@@ -6,7 +6,8 @@ const dimension_container = document.querySelector('#hirachy')
 let dimensions = {
 }
 let editor;
-let display; 
+let display;
+let quickCreator; 
 async function loadGameData() {
     try {
         const response1 = await fetch('assets/default.json');
@@ -15,29 +16,18 @@ async function loadGameData() {
         
         const response2 = await fetch('assets/def.json');
         const data2 = await response2.json();
+        definitions_json = data2
         editor = new Editor()
         display = new Display()
-        definitions_json = data2
+        quickCreator = new QuickCreator()
 
         document.querySelector('#download').addEventListener('click', () => {
             downloadAllDimensions()
         })
-        let ids = 0
-        document.querySelector('#cerate').addEventListener('click', () => {
-            const json = structuredClone(default_json); 
-            
-            const name = `Planet${String(ids)}`;
-            json.name = name;
-            json.dimensionId.path = name;
-            const key = `${json.dimensionId.namespace}_${name}`;
-            dimensions[key] = new Dimension(key, json);
-            
-            ids += 1;
-            display.draw_universe();
-        });
         resizeCanvas()
         document.addEventListener('keydown', (event) => {
-            const key = event.key.toLowerCase();
+            const key = event.key?.toLowerCase();
+            if (!key) return;
             switch (key) {
                 case 'escape':
                     for (let dim of Object.values(dimensions)) {
@@ -52,6 +42,7 @@ async function loadGameData() {
     }
 }
 function resizeCanvas() {
+    if (!display) return;
     const canvas = document.querySelector('#canvas');
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -165,6 +156,15 @@ class Dimension {
         const properties_frame = Object.assign(document.createElement('div'), {
             className: "dimension_properties",
         })
+        let properties = {}
+        for (let item of Object.keys(default_json)) {
+            if (this.properties[item]) {
+                properties[item] = this.properties[item]
+            }else {
+                properties[item] = default_json[item]
+            }
+        }
+        this.properties = properties
         this.html["properties"] = []
         for (let item of Object.entries(this.properties)) {
             const element = Object.assign(document.createElement('div'), {
@@ -306,6 +306,7 @@ class Display {
         const RGB = [SDR[0]*255,SDR[1]*255,SDR[2]*255]
         this.ctx.fillStyle = `rgb(${RGB[0]},${RGB[1]},${RGB[2]})`
         this.ctx.fillRect(0,0,this.width,this.height)
+        console.log(RGB)
     }
     draw_universe() {
         this.planets = []
@@ -420,6 +421,7 @@ class Editor {
         });
         this.activeDim = null
         this.activeProp = null
+        this.color = false
         this.setupListeners()
         for(let input of this.inputs) {
             input["frame"].style.display = "none"
@@ -429,7 +431,7 @@ class Editor {
         this.inputs[0]["input"].addEventListener('change', (e) => {
             if (this.activeDim && this.activeProp) {
                 dimensions[this.activeDim].properties[this.activeProp] = e.target.checked;
-                dimensions[this.activeDim].centerPlanet()
+                
             }
         });
         this.inputs[1]["input"].addEventListener('input', (e) => {
@@ -440,7 +442,7 @@ class Editor {
                 if (this.activeProp == "name" ){
                     dimensions[this.activeDim].html["name"].textContent = String(val)
                 }
-                dimensions[this.activeDim].centerPlanet()
+                
             }
         });
         const axes = ["x", "y", "z"];
@@ -456,27 +458,30 @@ class Editor {
         const paths = ["namespace","path"];
         this.inputs[4]["inputs"].forEach((input, i) => {
             input.addEventListener('input', (e) => {
+                let val = String(e.target.value)
                 if (this.activeDim && this.activeProp) {
                     const path = paths[i];
-                    dimensions[this.activeDim].properties[this.activeProp][path] = String(e.target.value)
+                    dimensions[this.activeDim].properties[this.activeProp][path] = val
                     if (this.activeProp == "dimensionId" ){
                         const dimension = dimensions[this.activeDim]
-                        const file_path = [dimension.properties[this.activeProp]["namespace"],dimension.properties[this.activeProp]["path"]].join("_")
+                        let file_path = [dimension.properties[this.activeProp]["namespace"],dimension.properties[this.activeProp]["path"]].join("_")
+                        if (Object.keys(dimensions).includes(file_path)) {
+                            return
+                        }
                         delete dimensions[this.activeDim];
                         dimension.file_path = file_path
                         dimension.html.file_path.textContent = file_path
                         this.activeDim  = file_path
                         dimensions[file_path] = dimension
                     }
-                    dimensions[this.activeDim].centerPlanet()
 
                 }
+                dimensions[this.activeDim].centerPlanet()
             });
         });
         this.inputs[3]["input"].addEventListener('input', (e) => {
             if (!this.activeDim || !this.activeProp) return;
             const newValue = e.target.value;
-            const currentData = dimensions[this.activeDim].properties[this.activeProp];
             if (newValue && Object.keys(dimensions).includes(newValue)) {
                 dimensions[this.activeDim].properties[this.activeProp] = dimensions[newValue].properties["dimensionId"];
             } else {
@@ -489,7 +494,7 @@ class Editor {
         for(let input of this.inputs) {
             input["frame"].style.display = "none"
         }
-        const info = prop ? definitions_json[prop] : null
+        const info = prop ? definitions_json[prop] : true
         if (!info) {
             display.draw_universe()
             return
@@ -541,9 +546,11 @@ class Editor {
                     option.value = null;
                     this.inputs[3]["datalist"].appendChild(option);
                     Object.keys(dimensions).forEach(path => {
-                        const option = document.createElement('option');
-                        option.value = path;
-                        this.inputs[3]["datalist"].appendChild(option);
+                        if (path != dim) {
+                            const option = document.createElement('option');
+                            option.value = path;
+                            this.inputs[3]["datalist"].appendChild(option);
+                        }
                     });
                 }else {
                     this.inputs[4]["frame"].style.display = "block";
@@ -556,9 +563,88 @@ class Editor {
         }
     }
 }
-class quickCreator {
+class QuickCreator {
     constructor() {
+        this.html = {
+            "container": document.querySelector("#quickCreator"),
+            "namespace": document.querySelector('#quickCreator-namespace'),
+            "path": document.querySelector('#quickCreator-path'),
+            "name": document.querySelector("#quickCreator-name"),
+            "vec1": document.querySelector('#quickCreator-vec1'),
+            "vec2": document.querySelector("#quickCreator-vec2"),
+            "vec3": document.querySelector("#quickCreator-vec3"),
+            "selection": document.querySelector("#quickCreator-selection"),
+            "datalist": document.querySelector('#quickCreator-datalist'),
+            "orbitalDistance": document.querySelector("#quickCreator-orbitalDistance"),
+            "earthRadiusMultiplier": document.querySelector("#quickCreator-earthRadiusMultiplier"),
+            "quickCreate": document.querySelector("#quickCreate"),
+            "close": document.querySelector("#close"),
+            "open": document.querySelector("#create")
+        }
+        this.id = 0
+        this.html["open"].addEventListener('click', () => this.open());
+        this.html["close"].addEventListener('click', () => {
+            this.html["container"].style.display = "none"
+        });
+        this.html["quickCreate"].addEventListener("click", () => {
+            this.quickCreate()
+        })
+    }
+    open() {
+        this.html["container"].style.display = "block"
+        this.html["vec1"].value = 0.0
+        this.html["vec2"].value = 0.0
+        this.html["vec3"].value = 0.0
+        this.html["namespace"].value = "adv_rocketry"
+        this.html["path"].value = ""
+        this.html["name"].value = ""
+        this.html["selection"].value = null
+        this.html["orbitalDistance"].value = 0.0
+        this.html["earthRadiusMultiplier"].value = 1.0
+        this.html["datalist"].innerHTML = "";
+        const option = document.createElement('option');
+        option.value = null;
+        this.html["datalist"].appendChild(option);
+        Object.keys(dimensions).forEach(path => {
+            const option = document.createElement('option');
+            option.value = path;
+            this.html["datalist"].appendChild(option);
+        });
+    }
+    quickCreate() {
+        const pos = {
+            "x": parseFloat(this.html["vec1"].value) || 0.0,
+            "y": parseFloat(this.html["vec2"].value) || 0.0,
+            "z": parseFloat(this.html["vec3"].value) || 0.0
+        }
+        const dimensionId = {
+            "namespace":String(this.html["namespace"].value) || "adv_rocketry",
+            "path": String(this.html["path"].value) || `planet${this.id}` 
+        }
+        let name = String(this.html["name"].value) || `Planet${this.id}` 
+        const parentDimensionId = String(this.html["selection"].value) || null
+        const orbitalDistance = parseFloat(this.html["orbitalDistance"].value) || 0.0
+        const earthRadiusMultiplier = parseFloat(this.html["earthRadiusMultiplier"].value) || 0.0
+        
+        let key = `${dimensionId["namespace"]}_${dimensionId["path"]}`;
+        if (Object.keys(dimensions).includes(key)) {
+            key += "1"
+            dimensionId["path"] += "1"
+        }
+        const json = structuredClone(default_json); 
 
+        json.position = pos;
+        json.name = name;
+        json.dimensionId = dimensionId;
+        json.parentDimensionId = Object.keys(dimensions).includes(parentDimensionId)&& parentDimensionId ? dimensions[parentDimensionId].properties["dimensionId"] : null;
+        json.orbitalDistance = orbitalDistance;
+        json.earthRadiusMultiplier = earthRadiusMultiplier;
+
+        dimensions[key] = new Dimension(key, json);
+        dimensions[key].centerPlanet()
+        this.open()
+        if (display) display.draw_universe()
+        this.id += 1;
     }
 }
 window.addEventListener('dragenter', (e) => {
